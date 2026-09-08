@@ -151,3 +151,17 @@ Patrols make attack passes, break away at close range, lead the player's movemen
 Impacts and explosions use a reusable pool of 320 instanced sparks and eight shield waves; enemy engines have glowing exhaust. Living skies include animated flocks; sterile worlds have ash or snow particles. Explorers turn and wave when approached, while wildlife moves away from the player.
 
 Rendering gradually adapts internal resolution after sustained frame-rate drops, excluding loading stalls. This is a performance safeguard, not a measured or guaranteed frame rate. New modules: `dogfight.js`, `combat-effects.js`, `living-sky.js`, `render-budget.js`. Validation: 19 tests and production build; no browser review.
+
+## Landmarks and landing assistance
+
+Each solid planet now has three named destinations with markers and distinct
+terrain: calderas, canyons, ruins or ice/crystal formations. **L** cycles the marked
+destination; its HUD indicator is also clickable. Scan nearby sites with **F** to
+save their discovery. Marked volcanic and toxic basins drain 6 shield points every
+two seconds near the ground, down to a minimum of 1. Leave the basin to recover.
+
+Hold **X** to brake and override boost. The landing prompt shows the expected pad
+and estimated stopping distance. A green ring marks touchdown. **E** checks the
+hull footprint, slope, water, obstacles and hazards; if no nearby safe site exists,
+the ship stays in flight. The approach clears terrain and known structures before
+a vertical touchdown. Thrusters produce ground dust at low altitude.

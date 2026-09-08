@@ -1,3 +1,4 @@
+import {landmarkRelief} from './landmark-sites.js';
 import {ART_PALETTES} from './art-direction.js';
 // All world generation is repeatable: a seed always produces the same universe.
 export function hashSeed(text) {
@@ -57,6 +58,7 @@ export function terrainHeight(x,z,planet) {
   if(planet.key==='volcanic'){const r=Math.hypot(x-580,z+400);h+=260*Math.exp(-Math.pow((r-230)/125,2))-130*Math.exp(-Math.pow(r/110,2));}
   if(planet.key==='oceanic')h=h*.65-25;
   if(planet.key==='crystalline')h+=Math.pow(Math.abs(Math.sin(x*.005)*Math.cos(z*.005)),8)*130;
+  h=landmarkRelief(x,z,h,planet);
   // Every generated world includes one clear, dry arrival site.
   const arrival=smooth(Math.min(1,distance/110));
   return 23*(1-arrival)+h*arrival;

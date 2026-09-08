@@ -1,3 +1,8 @@
+import {createDestinationLandmarks} from './destination-landmarks.js';
+import {createLandingEffects} from './landing-effects.js';
+import {siteHazardAt} from './landmark-sites.js';
+import {createTerrainQuadtree} from './terrain-quadtree.js';
+import {createPlanetFrame} from './large-world.js';
 import {createAurora} from './aurora.js';
 import {createLivingSky} from './living-sky.js';
 import {createRetroLandmarks} from './retro-landmarks.js';
@@ -10,31 +15,32 @@ import { rng, noise2, fbm, terrainHeight, noiseGLSL } from './procedural.js';
 import { makeGlowTexture, disposeGroup } from './universe.js';
 import { createMeadow } from './meadow.js';
 
-export function createSurface(planet) {
+export function createSurface(planet, normal) {
   const random=rng(planet.seed),group=new THREE.Group(),dummy=new THREE.Object3D();
   const height=(x,z)=>terrainHeight(x,z,planet),land=new THREE.Color(planet.land),grassColor=new THREE.Color(planet.grass),rockColor=new THREE.Color(planet.rock);
   const terrainMat=new THREE.MeshStandardMaterial({vertexColors:true,roughness:1,metalness:0,flatShading:true});
   terrainMat.onBeforeCompile=shader=>{shader.uniforms.slopeTint={value:rockColor};
-    shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 groundPosition;').replace('#include <begin_vertex>','#include <begin_vertex>\ngroundPosition=position;');
+    shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nattribute vec3 terrainPosition;varying vec3 groundPosition;').replace('#include <begin_vertex>','#include <begin_vertex>\ngroundPosition=terrainPosition;');
     shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nvarying vec3 groundPosition;uniform vec3 slopeTint;\n'+noiseGLSL).replace('#include <color_fragment>','#include <color_fragment>\nfloat patches=noise(groundPosition*.008);float strata=smoothstep(.4,.6,fract(groundPosition.y*.024+patches*.25));diffuseColor.rgb*=.91+patches*.08+strata*.07;float slope=1.-abs(normalize(cross(dFdx(groundPosition),dFdy(groundPosition))).y);diffuseColor.rgb=mix(diffuseColor.rgb,slopeTint,smoothstep(.18,.6,slope)*.55);');
   };
-  function terrain(size,segments,hole=0){
-    const geo=new THREE.PlaneGeometry(size,size,segments,segments);geo.rotateX(-Math.PI/2);const pos=geo.attributes.position,colors=[];
-    for(let i=0;i<pos.count;i++){
-      const x=pos.getX(i),z=pos.getZ(i),y=height(x,z);pos.setY(i,y);
-      const wet=THREE.MathUtils.smoothstep(y,0,10),variation=fbm(x*.024,z*.024,planet.seed+8,3);
-      const c=land.clone().lerp(grassColor,Math.min(.7,variation*wet));if(y>105)c.lerp(rockColor,Math.min(.65,(y-105)/180));if(planet.key==='glacial'&&y>90)c.lerp(new THREE.Color('#f3f5ed'),.6);if(y<2)c.multiplyScalar(.8);colors.push(c.r,c.g,c.b);
-    }
-    if(hole){const original=geo.index.array,indices=[];for(let i=0;i<original.length;i+=3){const a=original[i],b=original[i+1],c=original[i+2];const x=(pos.getX(a)+pos.getX(b)+pos.getX(c))/3,z=(pos.getZ(a)+pos.getZ(b)+pos.getZ(c))/3;if(Math.abs(x)>hole/2||Math.abs(z)>hole/2)indices.push(a,b,c);}geo.setIndex(indices);}
-    geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geo.computeVertexNormals();const mesh=new THREE.Mesh(geo,terrainMat);mesh.receiveShadow=true;group.add(mesh);
-  }
-  terrain(1600,180);terrain(8000,128,1520);group.add(createPaintedHorizon(planet));group.add(createRetroLandmarks(planet,height));
+  const frame=createPlanetFrame(planet, normal);
+  const terrain=createTerrainQuadtree({height,material:terrainMat,colorAt(x,z,y){
+    const wet=THREE.MathUtils.smoothstep(y,0,10),variation=fbm(x*.024,z*.024,planet.seed+8,3);
+    const c=land.clone().lerp(grassColor,Math.min(.7,variation*wet));
+    if(y>105)c.lerp(rockColor,Math.min(.65,(y-105)/180));
+    if(planet.key==='glacial'&&y>90)c.lerp(new THREE.Color('#f3f5ed'),.6);
+    if(y<2)c.multiplyScalar(.8);return c;
+  }});
+  group.add(terrain.group);terrain.update(new THREE.Vector3(0,82,130));
+  group.add(createPaintedHorizon(planet));group.add(createRetroLandmarks(planet,height));
+  const destinations=createDestinationLandmarks(planet,height);group.add(destinations.group);
+  const landingEffects=createLandingEffects(planet,height);group.add(landingEffects.group);
   const depthSize=256,depthPixels=new Uint8Array(depthSize*depthSize);
   for(let z=0;z<depthSize;z++)for(let x=0;x<depthSize;x++)depthPixels[z*depthSize+x]=Math.round(THREE.MathUtils.clamp((height((x/depthSize-.5)*8000,(z/depthSize-.5)*8000)+128)/512,0,1)*255);
   const depthMap=new THREE.DataTexture(depthPixels,depthSize,depthSize,THREE.RedFormat);depthMap.minFilter=depthMap.magFilter=THREE.LinearFilter;depthMap.needsUpdate=true;
-  const waterMat=new THREE.ShaderMaterial({transparent:true,uniforms:{lava:{value:planet.fluid==='lava'?1:0},time:{value:0},color:{value:new THREE.Color(planet.ocean)},fogColor:{value:new THREE.Color(planet.horizon)},depthMap:{value:depthMap}},vertexShader:`uniform float time;varying vec3 vP;varying float vDepth;void main(){vec3 p=position;p.y+=sin(p.x*.024+time*.7)*.16+cos(p.z*.031+time*.5)*.14;vP=p;vec4 mv=modelViewMatrix*vec4(p,1.);vDepth=-mv.z;gl_Position=projectionMatrix*mv;}`,fragmentShader:`uniform float time;uniform float lava;uniform vec3 color;uniform vec3 fogColor;uniform sampler2D depthMap;varying vec3 vP;varying float vDepth;${noiseGLSL}
+  const waterMat=new THREE.ShaderMaterial({transparent:true,uniforms:{lava:{value:planet.fluid==='lava'?1:0},time:{value:0},color:{value:new THREE.Color(planet.ocean)},fogColor:{value:new THREE.Color(planet.horizon)},depthMap:{value:depthMap}},vertexShader:`uniform float time;varying vec3 vP;varying float vDepth;varying vec3 vView;void main(){vec3 p=position;p.y+=sin(p.x*.024+time*.7)*.16+cos(p.z*.031+time*.5)*.14;vP=p;vec4 mv=modelViewMatrix*vec4(p,1.);vDepth=-mv.z;vView=-mv.xyz;gl_Position=projectionMatrix*mv;}`,fragmentShader:`uniform float time;uniform float lava;uniform vec3 color;uniform vec3 fogColor;uniform sampler2D depthMap;varying vec3 vP;varying float vDepth;varying vec3 vView;${noiseGLSL}
 void main(){float ground=texture2D(depthMap,vP.xz/8000.+.5).r*512.-128.;float waterDepth=max(0.,-ground);float shallow=1.-smoothstep(1.,20.,waterDepth);
-vec3 n=normalize(vec3(-cos(vP.x*.11+time*.8)*.06,1.,sin(vP.z*.09-time*.6)*.05));vec3 view=normalize(cameraPosition-vP);float fresnel=pow(1.-max(dot(n,view),0.),3.);float ripple=smoothstep(.44,.58,noise(vec3(vP.xz*.012,time*.06)));
+vec3 n=normalize(vec3(-cos(vP.x*.11+time*.8)*.06,1.,sin(vP.z*.09-time*.6)*.05));vec3 view=normalize(vec3(vec4(vView,0.)*viewMatrix));float fresnel=pow(1.-max(dot(n,view),0.),3.);float ripple=smoothstep(.44,.58,noise(vec3(vP.xz*.012,time*.06)));
 vec3 deep=color*.65;vec3 coast=mix(color,vec3(.28,.62,.55),.38);vec3 c=mix(deep,coast,shallow)*(.91+ripple*.12);c=mix(c,mix(fogColor,vec3(.27,.57,.63),.4),fresnel*.7);
 vec3 halfDirection=normalize(view+normalize(vec3(-.65,.5,-.55)));float spec=pow(max(dot(n,halfDirection),0.),210.);c+=vec3(1.,.78,.48)*spec*.55;
 float foam=(1.-smoothstep(.0,2.8,waterDepth))*smoothstep(.32,.62,noise(vec3(vP.xz*.3,time*.24)));c=mix(c,vec3(.79,.82,.66),foam*.5);
@@ -44,7 +50,7 @@ if(lava>.5){vec2 flow=vP.xz*.014+vec2(time*.035,-time*.021);float cells=noise(ve
 float fog=1.-exp(-vDepth*.0003);c=mix(c,fogColor,fog);gl_FragColor=vec4(c,.95);
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
-}`});const water=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000,100,100),waterMat);water.geometry.rotateX(-Math.PI/2);water.position.y=.1;group.add(water);water.visible=!['arid','crystalline','glacial'].includes(planet.key);
+}`});const water=new THREE.Mesh(new THREE.PlaneGeometry(terrain.size,terrain.size,100,100),waterMat);water.geometry.rotateX(-Math.PI/2);water.position.y=.1;group.add(water);water.visible=!['arid','crystalline','glacial'].includes(planet.key);
 
   const sterile=planet.life==='Nula'||planet.life==='Microbiana';const treeData=[],rockData=[],crystalData=[],grassData=[];
   for(let i=0;i<520;i++){
@@ -134,9 +140,11 @@ float fog=1.-exp(-vDepth*.0003);c=mix(c,fogColor,fog);gl_FragColor=vec4(c,.95);
   const livingSky=createLivingSky(planet);group.add(livingSky.mesh);
   const resources=crystalData.map((p,i)=>({position:new THREE.Vector3(p.x,p.y+p.s,p.z),name:planet.resource,id:`mineral-${i}`,type:'MINERAL',scanned:false}));
   for(let i=0;i<Math.min(treeData.length,50);i++){const t=treeData[i];resources.push({position:new THREE.Vector3(t.x,t.y+t.s*.5,t.z),name:planet.tree==='mushroom'?'Umbra corallina':planet.tree==='crystal'?'Prisma boreal':'Xerophyta solis',id:`flora-${i}`,type:sterile?'MINERAL':'FLORA',scanned:false});}
+  resources.push(...destinations.destinations);
   const explorers=[];
   for(let i=0;i<4;i++){const explorer=createExplorer(i);let x=0,z=0;for(let attempt=0;attempt<30;attempt++){const a=random()*Math.PI*2,r=18+random()*55;x=Math.cos(a)*r;z=Math.sin(a)*r;if(height(x,z)>3)break;}if(height(x,z)<3){x=15+i*3;z=0;}explorer.mesh.position.set(x,height(x,z),z);explorer.mesh.rotation.y=random()*Math.PI*2;group.add(explorer.mesh);explorer.home=explorer.mesh.position.clone();explorers.push(explorer);resources.push({position:explorer.mesh.position,name:explorer.name,id:`explorer-${i}`,type:'EXPLORADOR',scanned:false});}
   fauna.forEach((a,i)=>resources.push({position:a.mesh.position,name:'Cervus astralis',id:`fauna-${i}`,type:'FAUNA',scanned:false}));
   group.traverse(object=>{if(object.material)for(const material of Array.isArray(object.material)?object.material:[object.material])illustrateMaterial(material,planet.ink,.5);});
-  return {group,height,resources,fauna,planet,update(time,dt,camera,visitor=camera.position){aurora.update(time);livingSky.update(time,visitor);waterMat.uniforms.time.value=time;for(const [index,explorer] of explorers.entries()){const near=explorer.mesh.position.distanceTo(visitor)<18;explorer.play(near?'Wave':'Idle');if(near&&dt>0){const direction=visitor.clone().sub(explorer.mesh.position);direction.y=0;const yaw=Math.atan2(direction.x,direction.z),q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yaw);explorer.mesh.quaternion.slerp(q,1-Math.exp(-3*dt));}explorer.mixer.update(dt);}meadow.group.visible=!sterile&&camera.position.y-height(camera.position.x,camera.position.z)<210;if(meadow.group.visible)meadow.update(time,camera.position);sky.position.copy(camera.position);paintedClouds.update(time);for(const a of fauna){const danger=a.mesh.position.distanceTo(visitor)<22;if(danger&&dt>0){const away=a.mesh.position.clone().sub(visitor);away.y=0;away.normalize();const trial=a.center.clone().addScaledVector(away,dt*9);if(height(trial.x,trial.z)>3&&trial.length()<900)a.center.copy(trial);}const t=time*a.speed+a.phase;let x=a.center.x+Math.cos(t)*25,z=a.center.z+Math.sin(t)*25;let y=height(x,z);if(y<2){x=a.center.x;z=a.center.z;y=Math.max(2,height(x,z));}a.mesh.position.set(x,y,z);a.mesh.rotation.y=-t;a.legs.forEach((leg,i)=>leg.rotation.x=Math.sin(time*3+a.phase+i%2*Math.PI)*.27);}motesMesh.rotation.y=time*.005;},dispose(){for(const e of explorers){e.mixer.stopAllAction();e.mixer.uncacheRoot(e.mixer.getRoot());}disposeGroup(group);}};
+  const obstacles=[...destinations.obstacles.map(o=>({...o,top:height(o.x,o.z)+180})),...treeData.map(t=>({x:t.x,z:t.z,radius:t.s*.8,top:t.y+t.s*2})),...rockData.filter(r=>r.s>2).map(r=>({x:r.x,z:r.z,radius:r.s,top:r.y+r.s}))];
+  return {group,height,resources,fauna,planet,frame,terrain,obstacles,landmarks:destinations.destinations,landingEffects,hazardAt:(x,z)=>siteHazardAt(x,z,planet),update(time,dt,camera,visitor=camera.position){terrain.update(visitor);aurora.update(time);livingSky.update(time,visitor);waterMat.uniforms.time.value=time;for(const [index,explorer] of explorers.entries()){const near=explorer.mesh.position.distanceTo(visitor)<18;explorer.play(near?'Wave':'Idle');if(near&&dt>0){const direction=visitor.clone().sub(explorer.mesh.position);direction.y=0;const yaw=Math.atan2(direction.x,direction.z),q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),yaw);explorer.mesh.quaternion.slerp(q,1-Math.exp(-3*dt));}explorer.mixer.update(dt);}meadow.group.visible=!sterile&&camera.position.y-height(camera.position.x,camera.position.z)<210;if(meadow.group.visible)meadow.update(time,camera.position);sky.position.copy(camera.position);paintedClouds.update(time);for(const a of fauna){const danger=a.mesh.position.distanceTo(visitor)<22;if(danger&&dt>0){const away=a.mesh.position.clone().sub(visitor);away.y=0;away.normalize();const trial=a.center.clone().addScaledVector(away,dt*9);if(height(trial.x,trial.z)>3&&trial.length()<900)a.center.copy(trial);}const t=time*a.speed+a.phase;let x=a.center.x+Math.cos(t)*25,z=a.center.z+Math.sin(t)*25;let y=height(x,z);if(y<2){x=a.center.x;z=a.center.z;y=Math.max(2,height(x,z));}a.mesh.position.set(x,y,z);a.mesh.rotation.y=-t;a.legs.forEach((leg,i)=>leg.rotation.x=Math.sin(time*3+a.phase+i%2*Math.PI)*.27);}motesMesh.rotation.y=time*.005;},dispose(){terrain.dispose();terrainMat.dispose();for(const e of explorers){e.mixer.stopAllAction();e.mixer.uncacheRoot(e.mixer.getRoot());}disposeGroup(group);}};
 }

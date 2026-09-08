@@ -1,11 +1,12 @@
 const effects=['laser','hit','explosion','scan','landing','takeoff','warp','engine','rocket'];
-export function audioMix(mode,speed=0,progress=0){
+export function audioMix(mode,speed=0,progress=0,braking=false){
  const flight=['space','surface','transit','descent','ascent','takeoff','landing'].includes(mode),active=mode!=='menu'&&mode!=='paused';
  const p=Math.min(1,Math.max(0,progress)),maneuver=['takeoff','landing','ascent','descent'].includes(mode);
  let rocket=0,cutoff=550;
  if(mode==='takeoff'||mode==='ascent'){rocket=.14+.40*Math.sin(p*Math.PI*.5);cutoff=700+2300*p;}
  else if(mode==='landing'){rocket=(.22+.25*Math.sin(p*Math.PI))*(1-.8*Math.max(0,(p-.82)/.18));cutoff=900+900*Math.sin(p*Math.PI);}
  else if(mode==='descent'){rocket=.14+.18*Math.sin(p*Math.PI);cutoff=1600;}
+ if(braking&&['surface','space'].includes(mode)){rocket=Math.min(Math.max(speed,0)/560,1)*.2;cutoff=800;}
  return {music:active?(maneuver?.065:flight?.13:.18):0,engine:flight?(maneuver?.035:.08+Math.min(Math.max(speed,0)/1600,1)*.18):0,rate:.72+Math.min(Math.max(speed,0)/1600,1)*.65,rocket,cutoff,rumble:rocket*.18};
 }
 export function createGameAudio(){
@@ -33,8 +34,8 @@ export function createGameAudio(){
   if(!enabled)return;unlock();const buffer=buffers.get(name);if(!buffer||voices.size>=12||context.state!=='running')return;
   const source=context.createBufferSource(),gain=context.createGain();source.buffer=buffer;source.playbackRate.value=name==='laser'?.96+Math.random()*.08:1;gain.gain.value={laser:.26,hit:.35,explosion:.42,scan:.18,landing:.48,takeoff:.38,warp:.28}[name]??.2;source.connect(gain);gain.connect(master);voices.add(source);source.onended=()=>{voices.delete(source);source.disconnect();gain.disconnect();};source.start();
  }
- function update(mode,speed,progress=0){
-  const changed=mode!==currentMode;currentMode=mode;if(!context)return;const mix=audioMix(mode,speed,progress),t=context.currentTime;
+ function update(mode,speed,progress=0,braking=false){
+  const changed=mode!==currentMode;currentMode=mode;if(!context)return;const mix=audioMix(mode,speed,progress,braking),t=context.currentTime;
   rocketGain.gain.setTargetAtTime(enabled?mix.rocket:0,t,.12);rocketFilter.frequency.setTargetAtTime(mix.cutoff,t,.12);rumbleGain.gain.setTargetAtTime(enabled?mix.rumble:0,t,.12);
   engineGain.gain.setTargetAtTime(enabled?mix.engine:0,t,.25);musicGain.gain.setTargetAtTime(mix.music,t,.6);if(engine)engine.playbackRate.setTargetAtTime(mix.rate,t,.25);
   if(changed){if(mode==='paused'||mode==='menu'){music?.pause();for(const voice of voices)try{voice.stop();}catch{}}else startMusic();}

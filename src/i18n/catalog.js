@@ -1,5 +1,39 @@
 // Spanish is the source language; names, seeds and game state are never localized.
 export const phrases = `
+Caldera de Ceniza|Ash Caldera
+Calor extremo|Extreme heat
+Garganta de Basalto|Basalt Gorge
+Observatorio Calcinado|Scorched Observatory
+Cuenca Sulfurosa|Sulfur Basin
+Gas corrosivo|Corrosive gas
+Estación Silenciosa|Silent Station
+Fisura Amarilla|Yellow Fissure
+Cañón de los Ecos|Echo Canyon
+Cráter del Viajero|Traveller's Crater
+Puerta del Desierto|Desert Gate
+Santuario de las Raíces|Root Sanctuary
+Valle de las Brumas|Valley of Mists
+Anillo del Alba|Dawn Ring
+Atolón del Horizonte|Horizon Atoll
+Faro de las Mareas|Tidal Lighthouse
+Canal de las Agujas|Needle Channel
+Corona Resonante|Resonant Crown
+Fractura Prismática|Prismatic Rift
+Archivo de Cristal|Crystal Archive
+Catedral de Hielo|Ice Cathedral
+Cuenca Boreal|Boreal Basin
+Refugio del Silencio|Silent Refuge
+LUGAR DE INTERÉS|POINT OF INTEREST
+SIN ZONA SEGURA · BUSCA TERRENO LLANO Y DESPEJADO|NO SAFE SITE · FIND FLAT, CLEAR GROUND
+APROXIMACIÓN A LA ZONA MARCADA · TREN DESPLEGADO|APPROACHING MARKED SITE · GEAR DEPLOYED
+ZONA SEGURA A|SAFE SITE AT
+FRENADO|STOPPING DISTANCE
+FRENAR|BRAKE
+LUGARES|LANDMARKS
+REGISTRADO|CATALOGUED
+ABANDONA LA CUENCA|LEAVE THE BASIN
+Freno de la nave|Ship brake
+Cambiar lugar de interés|Cycle point of interest
 No AI' Sky — Un universo por descubrir|No AI' Sky — A universe to discover
 No AI' Sky. Un universo procedural: viaja entre planetas, aterriza y descubre sus mundos.|No AI' Sky. A procedural universe: travel between planets, land and discover their worlds.
 Universo procedural en 3D|Procedural 3D universe

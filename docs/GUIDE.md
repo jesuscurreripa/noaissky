@@ -151,3 +151,24 @@ Las patrullas maniobran en pasadas, se apartan al acercarse demasiado, anticipan
 Impactos y explosiones usan un conjunto reutilizable de 320 chispas instanciadas y ocho ondas de escudo; los propulsores enemigos tienen brillo propio. Los cielos habitables incluyen bandadas animadas; los estériles, partículas de ceniza o nieve. Los exploradores miran y saludan al acercarte y la fauna se aparta de ti.
 
 El renderizado adapta gradualmente la resolución interna ante caídas sostenidas de frecuencia, excluyendo pausas de carga del cálculo. Es una protección de rendimiento; no equivale a FPS medidos ni garantizados. Nuevos módulos: `dogfight.js`, `combat-effects.js`, `living-sky.js`, `render-budget.js`. Validación: 19 pruebas y compilación; sin navegador.
+
+## Lugares reconocibles y asistencia de aterrizaje
+
+Cada planeta sólido tiene tres destinos con nombre, marcadores y relieve propio:
+calderas, cañones, ruinas o agrupaciones de hielo/cristal. **L** cambia el destino
+marcado; también puedes pulsar su indicador en el HUD. **F**, al acercarte, registra
+el lugar mediante el escáner y conserva el hallazgo con la partida.
+
+Las cuencas volcánicas y tóxicas señaladas tienen peligro ambiental cerca del suelo:
+el escudo pierde 6 puntos cada dos segundos hasta un mínimo de 1. Salir de la cuenca
+permite que se recupere con las reglas habituales. La llegada inicial sigue siendo segura.
+
+**X** activa el freno y anula el impulso mientras lo mantienes. La indicación de
+aterrizaje muestra la distancia hasta la zona prevista y una estimación de frenado.
+El anillo verde señala dónde tocará tierra la nave. **E** comprueba el espacio de
+apoyo, pendientes, agua, obstáculos y peligros antes de iniciar la maniobra. Si no
+encuentra un sitio seguro cercano, permanece en vuelo para que busques otra zona.
+
+La aproximación sube a una altura de paso, cruza por encima del relieve y las
+estructuras detectadas, y termina con descenso vertical. Los propulsores levantan
+polvo cerca del suelo. Estas mejoras mantienen la navegación clásica.
