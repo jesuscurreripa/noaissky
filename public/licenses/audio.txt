@@ -1,0 +1,27 @@
+No AI' Sky — Audio credits
+
+Sound effects: Sci-fi Sounds, Kenney (2020), CC0 1.0 Universal.
+Source: https://kenney.nl/assets/sci-fi-sounds
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Mappings (source .ogg -> local .mp3):
+laserRetro_000 -> laser; impactMetal_000 -> hit;
+explosionCrunch_000 -> explosion; forceField_000 -> scan;
+doorClose_000 -> landing; thrusterFire_000 -> takeoff;
+engineCircular_000 -> warp; spaceEngineLow_000 -> engine.
+Converted to mono 32 kHz MP3 at 64 kbps. Engine/transition clips trimmed
+and faded to suit gameplay. No original archive is shipped.
+
+Music: Outer Space Loop, wipics (2020), CC0 1.0 Universal.
+Source: https://opengameart.org/content/outer-space-loop
+Original: https://opengameart.org/sites/default/files/outer_space_2.mp3
+Local: /audio/outer-space.mp3
+Transcoded to 32 kHz, 64 kbps MP3; played as a quiet looping soundtrack.
+
+Rocket sound redesign:
+rocket.mp3: layered thrusterFire_000 + spaceEngineLarge_000; pitch lowered,
+low-pass filtered, limited and faded. takeoff.mp3: thrusterFire_001 +
+lowFrequency_explosion_000. landing.mp3: impactMetal_000 +
+lowFrequency_explosion_001 + delayed forceField_000. All from the same
+Kenney CC0 pack. Converted to mono 32 kHz / 64 kbps MP3.
+Runtime adds generated low-frequency combustion noise, progress-driven
+thrust/filter envelopes, music ducking and a master dynamics compressor.

@@ -1,0 +1,9 @@
+Ultimate Space Kit — Quaternius — CC0 1.0 Universal
+Official pack: https://quaternius.com/packs/ultimatespacekit.html
+License: https://creativecommons.org/publicdomain/zero/1.0/
+Distribution: https://github.com/agentkaerf/FreeModels/tree/main/Ultimate%20Space%20Kit%20-%20March%202023
+Models: Astronaut_FinnTheFrog, Astronaut_RaeTheRedPanda,
+Spaceship_FernandoTheFlamingo, Spaceship_RaeTheRedPanda,
+Rock_1, Rock_2, Rock_Large_2.
+Converted from embedded glTF to GLB. Scale, orientation and asteroid batching adapted at runtime.
+Original license is retained under /models/quaternius/License.txt.

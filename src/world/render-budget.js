@@ -1,0 +1,2 @@
+// Slow hysteresis prevents resolution oscillation; loading stalls are excluded.
+export function createRenderBudget(initial){let ratio=initial,elapsed=0,frames=0;return {get ratio(){return ratio;},sample(dt,active){if(!active||dt<=0||dt>.15){elapsed=frames=0;return null;}elapsed+=dt;frames++;if(elapsed<4)return null;const fps=frames/elapsed;elapsed=frames=0;const next=Math.max(Math.min(1,initial),Math.min(initial,ratio+(fps<38?-.15:fps>57?.05:0)));if(Math.abs(next-ratio)<.01)return null;ratio=next;return ratio;}};}

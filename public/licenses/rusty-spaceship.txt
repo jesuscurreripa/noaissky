@@ -1,0 +1,21 @@
+Rusty Spaceship - Orange
+Author: Sousinho
+Author profile: https://sketchfab.com/sousinho
+Original model: https://sketchfab.com/3d-models/rusty-spaceship-orange-18541ebed6ce44a9923f9b8dc30d87f5
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+License URL: https://creativecommons.org/licenses/by/4.0/
+
+Retrieved from the user-specified repository:
+https://github.com/Domenicobrz/Threlte-in-practice-spaceship/
+Commit: f1f149de47bd7d15044c0f6fe651b6ffe7a19689
+Original path: static/models/spaceship.glb
+
+Modifications for No AI' Sky:
+- Embedded textures resized to a maximum of 2048 x 2048 pixels.
+- Textures converted to WebP at quality 92.
+- Geometry is unchanged. Runtime transforms normalize scale, origin and heading.
+- Material transparency, normal strength and environment reflections adapted to the renderer.
+- Procedural exhaust and retractable landing supports added at runtime.
+
+The original model's author, source and license metadata are retained in the GLB.
+Use of this model does not imply endorsement by its author or repository maintainer.
