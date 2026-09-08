@@ -1,5 +1,7 @@
 // Spanish is the source language; names, seeds and game state are never localized.
 export const phrases = `
+Saltar a pie|Jump on foot
+SALTAR|JUMP
 Caldera de Ceniza|Ash Caldera
 Calor extremo|Extreme heat
 Garganta de Basalto|Basalt Gorge

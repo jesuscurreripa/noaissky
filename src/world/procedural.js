@@ -54,7 +54,8 @@ export function terrainHeight(x,z,planet) {
   const distance=Math.hypot(x,z), mountainFade=smooth(Math.min(1,Math.max(0,(distance-230)/600)));
   let h=low+hills+mountain*mountainFade;
   if(planet.key==='glacial')h+=Math.abs(fbm(x*.003,z*.003,seed+72)-.5)*60;
-  if(planet.key==='arid')h=Math.round(h/5)*2.5+h*.5;
+  // Rounded terraces keep their shelves without discontinuous height jumps.
+  if(planet.key==='arid')h-=Math.sin(h*Math.PI*2/5)*5/(Math.PI*4);
   if(planet.key==='volcanic'){const r=Math.hypot(x-580,z+400);h+=260*Math.exp(-Math.pow((r-230)/125,2))-130*Math.exp(-Math.pow(r/110,2));}
   if(planet.key==='oceanic')h=h*.65-25;
   if(planet.key==='crystalline')h+=Math.pow(Math.abs(Math.sin(x*.005)*Math.cos(z*.005)),8)*130;

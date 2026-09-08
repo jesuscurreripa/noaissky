@@ -172,3 +172,5 @@ encuentra un sitio seguro cercano, permanece en vuelo para que busques otra zona
 La aproximación sube a una altura de paso, cruza por encima del relieve y las
 estructuras detectadas, y termina con descenso vertical. Los propulsores levantan
 polvo cerca del suelo. Estas mejoras mantienen la navegación clásica.
+
+A pie, pulsa **Espacio** para saltar. El salto tiene gravedad y puedes seguir moviéndote en el aire; mantén **Shift** para correr.

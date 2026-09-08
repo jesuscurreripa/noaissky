@@ -165,3 +165,5 @@ and estimated stopping distance. A green ring marks touchdown. **E** checks the
 hull footprint, slope, water, obstacles and hazards; if no nearby safe site exists,
 the ship stays in flight. The approach clears terrain and known structures before
 a vertical touchdown. Thrusters produce ground dust at low altitude.
+
+On foot, press **Space** to jump. Gravity brings you back down and you can keep moving in the air; hold **Shift** to sprint.
