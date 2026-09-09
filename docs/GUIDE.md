@@ -101,7 +101,7 @@ Estos cambios mantienen la paleta retro sci-fi ilustrada y la jugabilidad existe
 
 ## Generación y límites
 
-Semilla, nombres, distribución, alturas y decoración son procedurales. Los modelos del jugador, astronautas, enemigos y rocas son recursos externos reutilizados; la fauna usa piezas geométricas. Los mundos estériles no muestran praderas ni animales.
+Semilla, nombres, distribución, alturas y decoración son procedurales. La nave del jugador, enemigos y rocas son recursos externos reutilizados; los astronautas, nubes y placas del terreno se construyen en código con piezas geométricas. Los mundos estériles no muestran praderas ni animales.
 
 Cada visita crea una región de terreno aproximada de 8 × 8 km. El espacio y el terreno local se conectan mediante transiciones con nubes; no forman una esfera de terreno continua. Salir de la región de vuelo devuelve a órbita. Las órbitas planetarias se congelan durante la estancia en superficie y la pausa para conservar la salida; al regresar, la nave apunta alejándose del planeta.
 
@@ -120,7 +120,7 @@ Los indicadores de velocidad son unidades de juego adaptadas: nave planetaria 54
 | Superficie y vegetación | `src/world/surface.js`, `src/world/meadow.js` |
 | Arte y planetas ilustrados | `src/world/art-direction.js`, `src/world/retro-planet.js` |
 | Paisaje y nubes | `src/world/retro-landmarks.js`, `src/world/painted-horizon.js`, `src/world/painted-clouds.js` |
-| Modelos y astronautas | `src/world/asset-library.js`, `src/world/retro-explorer.js`, `src/world/player-ship.js` |
+| Modelos y astronautas | `src/world/asset-library.js`, `src/world/brick-explorer.js`, `src/world/player-ship.js` |
 | Cámaras y transiciones | `src/world/walking-camera.js`, `src/world/flight-transition.js` |
 | Postprocesado | `src/world/postprocessing.js` |
 | Auroras | `src/world/aurora.js` |
@@ -134,7 +134,7 @@ La última revisión de código pasó 19 pruebas automatizadas y la compilación
 ## Créditos
 
 - [Rusty Spaceship – Orange, Sousinho](https://sketchfab.com/3d-models/rusty-spaceship-orange-18541ebed6ce44a9923f9b8dc30d87f5), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Obtenida del [repositorio de Domenicobrz](https://github.com/Domenicobrz/Threlte-in-practice-spaceship/), commit `f1f149de47bd7d15044c0f6fe651b6ffe7a19689`. Texturas optimizadas a WebP, hasta 2048 px; orientación, escala, materiales, propulsor y tren adaptados. Licencia: `public/licenses/rusty-spaceship.txt`.
-- [Ultimate Space Kit, Quaternius](https://quaternius.com/packs/ultimatespacekit.html), CC0. Dos astronautas, dos naves enemigas y tres rocas, incluidos localmente en GLB. Trajes y acabados adaptados; mochila añadida en código. Licencia: `public/licenses/quaternius.txt`.
+- [Ultimate Space Kit, Quaternius](https://quaternius.com/packs/ultimatespacekit.html), CC0. Dos astronautas, dos naves enemigas y tres rocas, incluidos localmente en GLB. Los astronautas GLB se conservan como recursos, pero el juego utiliza ahora figuras originales construidas en código. Licencia: `public/licenses/quaternius.txt`.
 - Renderizado con Three.js; servidor y compilación con Vite.
 
 

@@ -15,9 +15,9 @@ export function createMeadow(planet,height){
   }
   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geo.setIndex(indices);geo.computeVertexNormals();
   const material=new THREE.MeshStandardMaterial({color:0xffffff,vertexColors:true,side:THREE.DoubleSide,roughness:.9,emissive:planet.grass,emissiveIntensity:.065});
-  material.onBeforeCompile=shader=>{shader.uniforms.windTime={value:0};material.userData.shader=shader;shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform float windTime;').replace('#include <begin_vertex>','#include <begin_vertex>\nfloat gust=sin(windTime*1.3+instanceMatrix[3].x*.065+instanceMatrix[3].z*.048);transformed.x+=gust*position.y*position.y*.2;transformed.z+=cos(windTime+instanceMatrix[3].x*.08)*position.y*.06;');};
+  material.onBeforeCompile=shader=>{shader.uniforms.windTime={value:0};material.userData.shader=shader;shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nuniform float windTime;').replace('#include <begin_vertex>','#include <begin_vertex>\nfloat gust=sin(windTime*1.3+instanceMatrix[3].x*.065+instanceMatrix[3].z*.048);transformed.x+=gust*position.y*position.y*.06;transformed.z+=cos(windTime+instanceMatrix[3].x*.08)*position.y*.06;');};
   const grass=new THREE.InstancedMesh(geo,material,count);grass.receiveShadow=true;grass.frustumCulled=false;group.add(grass);
-  const flowerCount=450,flowerGeo=new THREE.IcosahedronGeometry(.19,0),flowerMat=new THREE.MeshStandardMaterial({color:planet.key==='glacial'?'#c9b9f1':'#f2d68c',emissive:planet.key==='glacial'?'#795cc1':'#ac6a21',emissiveIntensity:.25,roughness:.8});
+  const flowerCount=450,flowerGeo=new THREE.CylinderGeometry(.19,.19,.14,10),flowerMat=new THREE.MeshStandardMaterial({color:planet.key==='glacial'?'#c9b9f1':'#f2d68c',emissive:planet.key==='glacial'?'#795cc1':'#ac6a21',emissiveIntensity:.25,roughness:.8});
   const flowers=new THREE.InstancedMesh(flowerGeo,flowerMat,flowerCount);flowers.frustumCulled=false;group.add(flowers);
   let cellX=Infinity,cellZ=Infinity;
   function regenerate(x,z){

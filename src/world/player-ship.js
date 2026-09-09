@@ -30,7 +30,7 @@ float hullLight=dot(diffuseColor.rgb,vec3(.2126,.7152,.0722));
 vec3 enamel=${cockpit?'vec3(.08,.25,.29)':'mix(vec3(.055,.07,.12),vec3(.94,.33,.10),smoothstep(.035,.25,hullLight))'};
 diffuseColor.rgb=mix(diffuseColor.rgb,enamel,.48);
 `);};material.customProgramCacheKey=()=>paintKey+':retro-enamel-'+cockpit;
-      if(cockpit){material.roughness=.22;material.metalness=.6;}
+      if(cockpit){material.roughness=.22;material.metalness=0;}
       for(const key of ['map','normalMap','metalnessMap','roughnessMap','emissiveMap'])if(material[key])material[key].anisotropy=8;
       material.needsUpdate=true;
     }
@@ -45,7 +45,7 @@ diffuseColor.rgb=mix(diffuseColor.rgb,enamel,.48);
 
   // Retractable supports are attached to the imported hull, not baked into it.
   const gear=new THREE.Group();gear.userData.landingGear=true;gear.visible=false;
-  const strutMaterial=new THREE.MeshStandardMaterial({color:0x718082,metalness:.8,roughness:.35}),footMaterial=new THREE.MeshStandardMaterial({color:0x25353c,metalness:.5,roughness:.7});
+  const strutMaterial=new THREE.MeshStandardMaterial({color:0x718082,metalness:0,roughness:.32}),footMaterial=new THREE.MeshStandardMaterial({color:0x25353c,metalness:0,roughness:.36});
   for(const [x,z] of [[-1.45,1.4],[1.45,1.4],[0,-3.5]]){
     const strut=new THREE.Mesh(new THREE.CylinderGeometry(.065,.08,.7,8),strutMaterial);strut.position.set(x,-1.02,z);strut.castShadow=true;gear.add(strut);
     const foot=new THREE.Mesh(new THREE.BoxGeometry(.55,.12,.7),footMaterial);foot.position.set(x,-1.39,z);foot.castShadow=true;gear.add(foot);

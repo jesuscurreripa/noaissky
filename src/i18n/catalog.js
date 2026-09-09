@@ -85,7 +85,7 @@ CLIC, ESPACIO / B|CLICK, SPACE / B
 Cámara / modo fotografía / pausa|Camera / photo mode / pause
 Centra el cursor para dejar de girar. E activa una aproximación automática desde el espacio; en la superficie busca una zona seca y aterriza. Pulsa E otra vez para salir de la nave. Acércate a ella para volver a subir. En móvil, usa el joystick y los botones E, R, SCAN y BOOST.|Center the cursor to stop turning. E starts an automatic approach from space; on a planet it finds dry ground and lands. Press E again to leave the ship. Approach it to board again. On mobile, use the joystick and the E, R, SCAN and BOOST buttons.
 Texturas optimizadas y adaptación al vuelo.|Textures optimized and adapted for flight.
-Personajes, enemigos y rocas|Characters, enemies and rocks
+Enemigos y rocas|Enemies and rocks
 Créditos|Credits
 UN MOMENTO ENTRE ESTRELLAS|A MOMENT AMONG THE STARS
 Tu viaje continúa aquí.|Your journey continues here.

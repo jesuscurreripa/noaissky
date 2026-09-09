@@ -101,7 +101,7 @@ These changes preserve the illustrated retro sci-fi palette and existing gamepla
 
 ## Generation and limitations
 
-Seeds, names, placement, heights and decoration are procedural. The player ship, astronauts, enemies and rocks are reused external assets; wildlife uses geometric parts. Sterile worlds do not display meadows or animals.
+Seeds, names, placement, heights and decoration are procedural. The player ship, enemies and rocks are reused external assets; astronauts, clouds and terrain plates are built in code from geometric parts. Sterile worlds do not display meadows or animals.
 
 Each visit creates an approximately 8 × 8 km terrain region. Space and local terrain are connected through cloud transitions; they do not form one continuous terrain sphere. Leaving the regional flight boundary returns the ship to orbit. Planetary orbits freeze during surface visits and pauses to preserve departure placement; when returning, the ship points away from the planet.
 
@@ -120,7 +120,7 @@ Displayed speeds use adapted game units: planetary flight 540 / 900 boosted; spa
 | Surface and vegetation | `src/world/surface.js`, `src/world/meadow.js` |
 | Art treatment and illustrated planets | `src/world/art-direction.js`, `src/world/retro-planet.js` |
 | Landscapes and clouds | `src/world/retro-landmarks.js`, `src/world/painted-horizon.js`, `src/world/painted-clouds.js` |
-| Models and astronauts | `src/world/asset-library.js`, `src/world/retro-explorer.js`, `src/world/player-ship.js` |
+| Models and astronauts | `src/world/asset-library.js`, `src/world/brick-explorer.js`, `src/world/player-ship.js` |
 | Cameras and transitions | `src/world/walking-camera.js`, `src/world/flight-transition.js` |
 | Postprocessing | `src/world/postprocessing.js` |
 | Auroras | `src/world/aurora.js` |
@@ -134,7 +134,7 @@ The latest code revision passed 19 automated tests and the Vite production build
 ## Credits
 
 - [Rusty Spaceship – Orange, Sousinho](https://sketchfab.com/3d-models/rusty-spaceship-orange-18541ebed6ce44a9923f9b8dc30d87f5), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Obtained from [Domenicobrz's repository](https://github.com/Domenicobrz/Threlte-in-practice-spaceship/), commit `f1f149de47bd7d15044c0f6fe651b6ffe7a19689`. Textures optimized to WebP, up to 2048 px; orientation, scale, materials, exhaust and landing gear adapted. License: `public/licenses/rusty-spaceship.txt`.
-- [Ultimate Space Kit, Quaternius](https://quaternius.com/packs/ultimatespacekit.html), CC0. Two astronauts, two enemy ships and three rocks, bundled locally as GLB. Suits and finishes adapted; backpack added in code. License: `public/licenses/quaternius.txt`.
+- [Ultimate Space Kit, Quaternius](https://quaternius.com/packs/ultimatespacekit.html), CC0. Two astronauts, two enemy ships and three rocks, bundled locally as GLB. The astronaut GLBs remain in the assets, but the game now uses original figures built in code. License: `public/licenses/quaternius.txt`.
 - Rendering by Three.js; development server and builds by Vite.
 
 

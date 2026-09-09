@@ -18,7 +18,7 @@ export function selectTerrainLeaves(visitor, {size = 131072, minSize = 128, spli
   return leaves;
 }
 
-export function createTerrainQuadtree({height, material, colorAt, size=131072, segments=16, maxLeaves=256, buildsPerFrame=8}) {
+export function createTerrainQuadtree({height, material, colorAt, size=131072, segments=16, maxLeaves=256, buildsPerFrame=8, decorateGeometry}) {
   const group=new THREE.Group(), meshes=new Map();
   group.name='CPU terrain quadtree';
   let desired=[], signature='', disposed=false;
@@ -41,6 +41,7 @@ export function createTerrainQuadtree({height, material, colorAt, size=131072, s
     const bottom=positions.length/3;
     for(const a of edge)append(positions[a*3],positions[a*3+2],positions[a*3+1]-Math.max(64,node.size*.1));
     for(let i=0;i<edge.length;i++){const j=(i+1)%edge.length;indices.push(edge[i],bottom+i,edge[j],edge[j],bottom+i,bottom+j);}
+    decorateGeometry?.({node,segments,height,positions,colors,coordinates,indices,colorAt});
     const geometry=new THREE.BufferGeometry();
     geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('terrainPosition',new THREE.Float32BufferAttribute(coordinates,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.setIndex(indices);geometry.computeVertexNormals();geometry.computeBoundingSphere();
     const mesh=new THREE.Mesh(geometry,material);mesh.position.set(node.x,0,node.z);mesh.receiveShadow=true;mesh.visible=false;group.add(mesh);meshes.set(node.key,mesh);

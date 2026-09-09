@@ -1,30 +1,9 @@
 import * as THREE from 'three';
 
-// A shared lighting treatment, layered over the existing PBR and animation shaders.
-// No extra scene pass, outlines, shadow map, or screen-space effect is required.
-export function illustrateMaterial(material,ink='#393759',strength=.35){
- if(material.userData.illustrated||!material.isMeshStandardMaterial)return material;
- material.userData.illustrated=true;
- const previous=material.onBeforeCompile,cacheKey=material.customProgramCacheKey();
- material.onBeforeCompile=function(shader,renderer){
-  previous.call(this,shader,renderer);
-  shader.uniforms.illustrationInk={value:new THREE.Color(ink)};
-  shader.uniforms.illustrationStrength={value:strength};
-  shader.fragmentShader=shader.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 illustrationInk;uniform float illustrationStrength;');
-  shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`
-float illustrationLuma=dot(outgoingLight,vec3(.2126,.7152,.0722));
-float illustrationBand=.24+.30*smoothstep(.16,.24,illustrationLuma)+.35*smoothstep(.43,.55,illustrationLuma)+.38*smoothstep(.82,1.02,illustrationLuma);
-vec3 illustrationTone=outgoingLight*(illustrationBand/max(illustrationLuma,.08));
-outgoingLight=mix(outgoingLight,illustrationTone,illustrationStrength*.38);
-float illustrationShade=1.-smoothstep(.08,.55,illustrationLuma);
-outgoingLight+=illustrationInk*diffuseColor.rgb*illustrationShade*.45;
-float illustrationRim=pow(1.-abs(dot(normalize(normal),normalize(vViewPosition))),4.);
-outgoingLight+=diffuseColor.rgb*illustrationRim*.10;
-#include <opaque_fragment>`);
- };
- material.customProgramCacheKey=()=>`${cacheKey}:illustrated-v1`;
- material.needsUpdate=true;return material;
-}
+import {applyMoldedFinish} from './molded-material.js';
+
+// Compatibility entry point used by ships, landmarks and surface props.
+export function illustrateMaterial(material){return applyMoldedFinish(material);}
 
 export const ART_PALETTES={
  verdant:{land:'#d38965',grass:'#c66280',vegetation:'#ef5d77',ocean:'#168d94',sky:'#247e9c',horizon:'#f2c8a2',ink:'#493c69',rock:'#a56374'},
